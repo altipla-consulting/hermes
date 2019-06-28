@@ -9,6 +9,7 @@ export default {
       <p>Go to: <router-link to="/test/reload">Reload View</router-link></p>
       <p>Go to: <router-link to="/test/throw-error">Throw Error View</router-link></p>
       <p>Go to: <router-link to="/test/throw-not-found">Throw Not Found View</router-link></p>
+      <p>Go to: <router-link to="/test/delayed">Delayed View</router-link></p>
     </div>
   `,
 }

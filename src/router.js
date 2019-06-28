@@ -90,6 +90,10 @@ function matchRoute(routes, path) {
 
 
 function loadRoute(Vue, routes, match, afterHooks) {
+  if ($router.isLoading) {
+    return;
+  }
+  
   $route.path = match.path;
   $route.params = match.params;
   $route.search = initSearch(match.search);
