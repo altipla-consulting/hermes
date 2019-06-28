@@ -57,9 +57,9 @@ Vue.use(Hermes, {
 ```js
 export default [
   // This route will load ./views/home.js as the component of the view.
-  {path: '/test/', component: 'home'},
-  {path: '/test/simple', component: 'simple'},
-  {path: '/test/params/:foo', component: 'params'},
+  {path: '/', component: 'home'},
+  {path: '/simple', component: 'simple'},
+  {path: '/params/:foo', component: 'params'},
 
   // This will be loaded in case the navigate() of a view fails.
   {path: '[error]', component: 'error'},
@@ -77,7 +77,7 @@ export default {
   template: `
     <div>
       <h1>Simple View</h1>
-      <h4>Back: <router-link to="/test/">Home View</router-link></h4>
+      <h4>Back: <router-link to="/">Home View</router-link></h4>
     </div>
   `,
 

@@ -2,14 +2,14 @@
 export default {
   template: `
     <div>
-      <p>Home View</p>
-      <p>Go to: <router-link to="/test/simple">Simple View</router-link></p>
-      <p>Go to: <router-link to="/test/params/foo">Params View</router-link></p>
-      <p>Go to: <router-link to="/test/search?foo=2&bar=qux">Search View</router-link></p>
-      <p>Go to: <router-link to="/test/reload">Reload View</router-link></p>
-      <p>Go to: <router-link to="/test/throw-error">Throw Error View</router-link></p>
-      <p>Go to: <router-link to="/test/throw-not-found">Throw Not Found View</router-link></p>
-      <p>Go to: <router-link to="/test/delayed">Delayed View</router-link></p>
+      <h1>Home View</h1>
+      <p>Go to: <router-link to="/simple">Simple View</router-link></p>
+      <p>Go to: <router-link to="/params/foo">Params View</router-link></p>
+      <p>Go to: <router-link to="/search?foo=2&bar=qux">Search View</router-link></p>
+      <p>Go to: <router-link to="/reload">Reload View</router-link></p>
+      <p>Go to: <router-link to="/throw-error">Throw Error View</router-link></p>
+      <p>Go to: <router-link to="/throw-not-found">Throw Not Found View</router-link></p>
+      <p>Go to: <router-link to="/delayed">Delayed View</router-link></p>
     </div>
   `,
 }

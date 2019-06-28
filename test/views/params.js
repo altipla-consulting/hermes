@@ -4,7 +4,7 @@ export default {
     <div>
       <h1>Params View</h1>
       <p>{{fullParams}}</p>
-      <h4>Back: <router-link to="/test/">Home View</router-link></h4>
+      <h4>Back: <router-link to="/">Home View</router-link></h4>
     </div>
   `,
 
