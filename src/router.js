@@ -93,7 +93,7 @@ function loadRoute(Vue, routes, match, afterHooks) {
   if ($router.isLoading) {
     return;
   }
-  
+
   $route.path = match.path;
   $route.params = match.params;
   $route.search = initSearch(match.search);
@@ -217,8 +217,20 @@ export function createRouter(Vue, {context, prefix, routes}) {
     };
   };
 
+  let navigateHooks = [];
+  $router.beforeNavigate = hook => {
+    navigateHooks.push(hook);
+    return () => {
+      navigateHooks.splice(navigateHooks.indexOf(hook), 1);
+    };
+  };
+
   // Navigate helper for links and redirections.
   $router.navigate = u => {
+    for (let hook of navigateHooks) {
+      u = hook(u);
+    }
+    
     let match = matchRoute(routes, u);
     loadRoute(Vue, routes, match, afterHooks);
   };
