@@ -5,6 +5,13 @@
 
 ---
 
+## Install
+
+```shell
+npm i --save @altipla/hermes
+```
+
+
 ## Differences with `vue-router`
 
 Things we improve:
@@ -54,6 +61,8 @@ Vue.use(Hermes, {
 ````
 
 
+The routes file should export the whole list of URLs registered in the application:
+
 ```js
 export default [
   // This route will load ./views/home.js as the component of the view.
@@ -83,6 +92,69 @@ export default {
 
   async navigate() {
     await myService.LoadAnything();
+  },
+}
+```
+
+
+## Things you can do with this lib
+
+#### Route params
+
+```js
+// routes.js
+export default [
+  {path: '/params/:foo', component: 'params'},
+]
+
+// params.js
+export default {
+  template: `
+    <div>
+      <h1>Params View</h1>
+      <p>{{myparam}}</p>
+    </div>
+  `,
+
+  computed: {
+    myparam() {
+      return this.$route.params.foo;
+    },
+  },
+}
+```
+
+
+#### Programmatic navigation
+
+```js
+Vue.$router.navigate('/myroute');
+````
+
+
+#### Search parameters
+
+If you access `/search?foo=bar` this view will show `bar` inside the paragraph:
+
+```js
+// routes.js
+export default [
+  {path: '/search', component: 'search'},
+]
+
+// search.js
+export default {
+  template: `
+    <div>
+      <h1>Search View</h1>
+      <p>{{myparam}}</p>
+    </div>
+  `,
+
+  computed: {
+    myparam() {
+      return this.$route.search.foo;
+    },
   },
 }
 ```
