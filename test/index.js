@@ -15,6 +15,7 @@ Vue.use(Hermes, {
     {path: '/test/reload', component: 'reload'},
     {path: '/test/throw-error', component: 'throw-error'},
     {path: '[error]', component: 'error'},
+    {path: '*', component: 'not-found'},
   ],
 });
 
