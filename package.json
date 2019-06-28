@@ -6,6 +6,7 @@
   "scripts": {
     "webpack": "webpack --config test/webpack.config.js --watch",
     "build": "webpack --config test/webpack.config.js",
+    "test": "npm run lint && npm run build",
     "lint": "eslint src/**/*.js"
   },
   "repository": {
