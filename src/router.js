@@ -230,7 +230,7 @@ export function createRouter(Vue, {context, prefix, routes}) {
     for (let hook of navigateHooks) {
       u = hook(u);
     }
-    
+
     let match = matchRoute(routes, u);
     loadRoute(Vue, routes, match, afterHooks);
   };

@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "webpack": "webpack --config test/webpack.config.js --watch",
+    "build": "webpack --config test/webpack.config.js",
     "lint": "eslint src/**/*.js"
   },
   "repository": {
