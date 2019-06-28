@@ -1,5 +1,5 @@
 {
-  "name": "hermes",
+  "name": "@altipla/hermes",
   "version": "0.1.0",
   "description": "Vue router that improves the lifecycle callbacks.",
   "main": "src/index.js",
