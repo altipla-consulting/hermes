@@ -39,7 +39,7 @@ function initRoutes(routes) {
 
     if (route.path === '*') {
       route.regexp = new RegExp(/.+/);
-    } else {
+    } else if (route.path !== '[error]') {
       route.keys = [];
       route.regexp = pathToRegexp(route.path, route.keys, {sensitive: true});
       route.keys = route.keys.map(key => key.name);
@@ -62,6 +62,10 @@ function matchRoute(routes, path) {
   path = u.pathname;
 
   for (let route of routes) {
+    if (!route.regexp) {
+      continue;
+    }
+
     let match = path.match(route.regexp);
     if (match) {
       let params = {};
@@ -85,7 +89,7 @@ function matchRoute(routes, path) {
 }
 
 
-function loadRoute(Vue, match, afterHooks) {
+function loadRoute(Vue, routes, match, afterHooks) {
   $route.path = match.path;
   $route.params = match.params;
   $route.search = initSearch(match.search);
@@ -150,7 +154,8 @@ function loadRoute(Vue, match, afterHooks) {
         }
 
         // Load the error page.
-        $route.component = LoadError;
+        let error = routes.find(r => r.path === '[error]');
+        $route.component = error ? error.component : undefined;
         $route.lastException = err;
         $router.$$loadingComponent = null;
 
@@ -211,7 +216,7 @@ export function createRouter(Vue, {context, prefix, routes}) {
   // Navigate helper for links and redirections.
   $router.navigate = u => {
     let match = matchRoute(routes, u);
-    loadRoute(Vue, match, afterHooks);
+    loadRoute(Vue, routes, match, afterHooks);
   };
 
   // When the user changes the route we change the component too.

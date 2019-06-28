@@ -13,6 +13,8 @@ Vue.use(Hermes, {
     {path: '/test/params/:foo', component: 'params'},
     {path: '/test/search', component: 'search'},
     {path: '/test/reload', component: 'reload'},
+    {path: '/test/throw-error', component: 'throw-error'},
+    {path: '[error]', component: 'error'},
   ],
 });
 
