@@ -205,6 +205,8 @@ export function createRouter(Vue, {context, prefix, routes}) {
   Vue.prototype.$route = $route;
   Vue.prototype.$router = $router;
 
+  Vue.$router = $router;
+
   // Prepare all the RegExps for matching routes.
   routes = initRoutes(routes);
 
