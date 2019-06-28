@@ -44,7 +44,7 @@ Vue.use(Hermes, {
   // Prefix to add to each "component" in the routes.js file.
   prefix: './views',
 
-  // Webpack context import to load all the files inside the views folder
+  // Webpack context require to load all the files inside the views folder
   // to then use them as specified in the routes.js file.
   context: require.context('.', true, /^\.\/views\/.+\.js$/),
 
@@ -61,8 +61,10 @@ export default [
   {path: '/test/simple', component: 'simple'},
   {path: '/test/params/:foo', component: 'params'},
 
-  // This 
+  // This will be loaded in case the navigate() of a view fails.
   {path: '[error]', component: 'error'},
+
+  // Not found catch-all route.
   {path: '*', component: 'not-found'},
 ]
 ````
