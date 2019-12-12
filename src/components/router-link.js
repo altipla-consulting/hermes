@@ -12,7 +12,7 @@ export default {
   render(createElement) {
     return createElement('a', {
       attrs: {
-        href: this.to,
+        href: this.$router.transformLink(this.to),
       },
       on: {
         click: this.navigate,

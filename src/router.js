@@ -181,6 +181,10 @@ function formatPath(match) {
 
 
 export function createRouter(Vue, {context, prefix, routes}) {
+  if (!prefix) {
+    prefix = '.';
+  }
+
   routes = routes.map(route => {
     if (!route.component) {
       return route;
@@ -229,12 +233,32 @@ export function createRouter(Vue, {context, prefix, routes}) {
 
   // Navigate helper for links and redirections.
   $router.navigate = u => {
+    u = $router.transformLink(u);
+    
     for (let hook of navigateHooks) {
       u = hook(u);
     }
 
     let match = matchRoute(routes, u);
     loadRoute(Vue, routes, match, afterHooks);
+  };
+
+  // Register a new link transformer that modifies all URLs before assigning them
+  // to any kind of link on the page.
+  let linkTransformers = [];
+  $router.addLinkTransformer = hook => {
+    linkTransformers.push(hook);
+    return () => {
+      linkTransformers.splice(linkTransformers.indexOf(hook), 1);
+    };
+  };
+
+  // Pass a URL through all the hooks.
+  $router.transformLink = u => {
+    for (let hook of linkTransformers) {
+      u = hook(u);
+    }
+    return u;
   };
 
   // When the user changes the route we change the component too.
