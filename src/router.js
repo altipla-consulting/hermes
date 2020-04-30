@@ -1,8 +1,8 @@
 
 import isFunction from 'lodash/isFunction';
 import cloneDeepWith from 'lodash/cloneDeepWith';
-import pathToRegexp from 'path-to-regexp';
-import { parse as parseURL } from 'native-url';
+import { pathToRegexp } from 'path-to-regexp';
+import { parse as parseURL, format as formatURL } from 'native-url';
 
 
 let $route, $router;
@@ -176,7 +176,7 @@ function formatPath(match) {
   let u = parseURL(match.path, true, true);
   delete u.search;
   u.query = match.search;
-  return u.format(u);
+  return formatURL(u);
 }
 
 
