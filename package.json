@@ -3,8 +3,10 @@
   "version": "0.2.1",
   "description": "Advanced Vue router that improves the lifecycle callbacks.",
   "main": "src/index.js",
+  "module": "dist/hermes.esm.min.js",
   "scripts": {
-    "build": "webpack --config test/webpack.config.js",
+    "clean": "rm -rf dist",
+    "build": "webpack --mode production -o dist/hermes.esm.min.js",
     "test": "npm run lint && npm run build",
     "lint": "eslint src/**/*.js",
     "frontend": "webpack --config test/webpack.config.js --watch",
