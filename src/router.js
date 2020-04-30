@@ -2,7 +2,7 @@
 import isFunction from 'lodash/isFunction';
 import cloneDeepWith from 'lodash/cloneDeepWith';
 import pathToRegexp from 'path-to-regexp';
-import url from 'url';
+import { parse as parseURL } from 'native-url';
 
 
 let $route, $router;
@@ -58,7 +58,7 @@ function initRoutes(routes) {
 
 
 function matchRoute(routes, path) {
-  let u = url.parse(path, true, true);
+  let u = parseURL(path, true, true);
   path = u.pathname;
 
   for (let route of routes) {
@@ -173,7 +173,7 @@ function loadRoute(Vue, routes, match, afterHooks) {
 
 
 function formatPath(match) {
-  let u = url.parse(match.path, true, true);
+  let u = parseURL(match.path, true, true);
   delete u.search;
   u.query = match.search;
   return u.format(u);
