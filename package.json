@@ -1,6 +1,6 @@
 {
   "name": "@altipla/hermes",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Advanced Vue router that improves the lifecycle callbacks.",
   "main": "src/index.js",
   "module": "dist/hermes.esm.min.js",
