@@ -1,7 +1,7 @@
 
 import Vue from 'vue';
 
-import Hermes from '../src/index';
+import Hermes from '../dist/hermes.esm';
 
 
 Vue.use(Hermes, {
