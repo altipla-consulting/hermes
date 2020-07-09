@@ -27,7 +27,7 @@ Things that remain the same:
 
 - Same names for the components (`<router-view>` and `<router-link>`)
 - Parameters and catch-all (aka not found) views the same as `vue-router`.
-- It has the same `this.$route` and `this.$router` objects to control the routing though individual methods and properties may vary.
+- It has the same `this.route` and `this.router` objects to control the routing though individual methods and properties may vary. They aren't prefixed by `$` though.
 
 
 Things not implemented in this repo:
@@ -41,8 +41,8 @@ Things not implemented in this repo:
 In the [test](test) folder there is a complete working example. The main part of the code is the registration of this plugin:
 
 ```js
-import Vue from 'vue';
-import Hermes from '@altipla/hermes';
+import { createApp } from 'vue'
+import Hermes from '@altipla/hermes'
 
 import routes from './routes';
 

@@ -1,4 +1,8 @@
 
+import { h } from 'vue'
+import { useRouter } from '../use-api'
+
+
 export default {
   name: 'router-link',
 
@@ -9,23 +13,19 @@ export default {
     },
   },
 
-  render(createElement) {
-    return createElement('a', {
-      attrs: {
-        href: this.$router.transformLink(this.to),
-      },
-      on: {
-        click: this.navigate,
-      },
-    }, this.$slots.default);
-  },
+  setup({ to }, { slots }) {
+    let router = useRouter()
+    let href = router.transformLink(to)
 
-  methods: {
-    navigate($event) {
+    function onClick($event) {
       if (!$event.ctrlKey) {
-        $event.preventDefault();
-        this.$router.navigate(this.to);
+        $event.preventDefault()
+        router.navigate(href)
       }
-    },
+    }
+
+    return () => {
+      return h('a', { href, onClick }, [slots.default()])
+    }
   },
-};
+}

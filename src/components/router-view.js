@@ -1,28 +1,34 @@
 
+import { h, ref } from 'vue'
+
+import { useRoute } from '../use-api'
+
+
 export default {
   name: 'router-view',
-  functional: true,
+  setup() {
+    let route = useRoute()
+    let viewRef = ref()
 
-  render(createElement, {parent}) {
-    // Directly use parent context's createElement() function
-    // so that components rendered by router-view can resolve named slots
-    const h = parent.$createElement;
+    return () => {
+      let component
+      if (route.component) {
+        component = h(route.component)
+      }
 
-    // Render view component if present. If there is a loading component we use
-    // it as a child even when it isn't be visible. This should allow
-    // Vue to mount the element and start the load process.
-    let children = [];
-    if (parent.$route.component) {
-      children.push(h(parent.$route.component, {viewComponent: true}));
+      if (route.loadingComponent) {
+        component = h(
+          route.loadingComponent,
+          {
+            ref: viewRef,
+            onVnodeMounted() {
+              route.loadingInstance = viewRef.value
+            },
+          },
+        )
+      }
+
+      return h('main', null, component)
     }
-    if (parent.$router.$$loadingComponent) {
-      children.push(h(parent.$router.$$loadingComponent, {
-        viewComponent: true,
-        style: {
-          visibility: 'hidden',
-        },
-      }));
-    }
-    return h('main', null, children);
   },
-};
+}

@@ -1,20 +1,16 @@
 
-import isFunction from 'lodash/isFunction';
-import cloneDeepWith from 'lodash/cloneDeepWith';
-import { pathToRegexp } from 'path-to-regexp';
-import { parse as parseURL, format as formatURL } from 'native-url';
+import { reactive, nextTick, markRaw, h } from 'vue'
+import { isFunction, cloneDeepWith } from 'lodash-es'
+import { pathToRegexp } from 'path-to-regexp'
 
 
-let $route, $router;
-
-
-function initSearch(search) {
+function buildSearch(search) {
   return {
     ...search,
     get(key) {
-      return this[key] || '';
+      return this[key] || ''
     },
-  };
+  }
 }
 
 
@@ -22,250 +18,234 @@ function initRoutes(routes) {
   return routes.map(route => {
     if (route.redirect) {
       route.component = {
-        render(h) {
-          return h();
+        render() {
+          return h('div')
         },
 
-        afterNavigate() {
-          let dest = route.redirect;
-          Object.keys($route.params).forEach(key => {
-            dest = dest.replace(`:${key}`, $route.params[key]);
-          });
+        navigate() {
+          let dest = route.redirect
+          route.keys.forEach(key => {
+            dest = dest.replace(`:${key}`, this.route.params[key])
+          })
 
-          $router.navigate(dest);
+          this.router.navigate(dest)
         },
-      };
+      }
     }
 
     if (route.path === '*') {
-      route.regexp = new RegExp(/.+/);
+      route.regexp = new RegExp(/.+/)
     } else if (route.path !== '[error]') {
-      route.keys = [];
-      route.regexp = pathToRegexp(route.path, route.keys, {sensitive: true});
-      route.keys = route.keys.map(key => key.name);
+      let keys = []
+      route.regexp = pathToRegexp(route.path, keys, { sensitive: true })
+      route.keys = keys.map(key => key.name)
     }
 
-    // Notify every view instance initialization to the router.
-    route.component.beforeCreate = function() {
-      if (this.$vnode && this.$vnode.data.viewComponent) {
-        $router.$$loadingInstance = this;
-      }
-    };
-
-    return route;
-  });
+    return route
+  })
 }
 
 
 function matchRoute(routes, path) {
-  let u = parseURL(path, true, true);
-  path = u.pathname;
+  let url = new URL(path, 'https://w.w')
 
   for (let route of routes) {
     if (!route.regexp) {
-      continue;
+      continue
     }
 
-    let match = path.match(route.regexp);
+    let match = url.pathname.match(route.regexp)
     if (match) {
-      let params = {};
+      let params = {}
       match.forEach((param, index) => {
         if (index === 0) {
-          return;
+          return
         }
-        params[route.keys[index - 1]] = param;
-      });
+        params[route.keys[index - 1]] = param
+      })
+
+      let search = {}
+      for (let [key, value] of url.searchParams) {
+        search[key] = value
+      }
 
       return {
         route,
-        path,
         params,
-        search: u.query,
-      };
+        search,
+        path: url.pathname,
+      }
     }
   }
 
-  throw new Error(`route not found: ${path}`);
+  throw new Error(`route not found: ${url.pathname}`)
 }
 
 
-function loadRoute(Vue, routes, match, afterHooks) {
-  if ($router.isLoading) {
-    return;
-  }
-
-  $route.path = match.path;
-  $route.params = match.params;
-  $route.search = initSearch(match.search);
-
-  $router.isLoading = true;
-
+async function loadRoute(error, route, match) {
   // Mount a new component instance everytime even when we are reloading the
   // same route again. This is one of the big differences with VueRouter.
-  let component = cloneDeepWith(match.route.component, value => {
+  let component = markRaw(cloneDeepWith(match.route.component, value => {
     if (isFunction(value)) {
-      return value;
+      return value
     }
-  });
-  $router.$$loadingComponent = component;
-  $router.$$loadingInstance = null;
-  
-  Vue.nextTick(() => {
-    Promise.resolve(true)
-      .then(() => {
-        if ($router.$$loadingComponent.navigate) {
-          return $router.$$loadingComponent.navigate.call($router.$$loadingInstance);
-        }
-      })
-      .then(() => {
+  }))
+
+  route.path = match.path
+  route.params = match.params
+  route.search = match.search
+  route.isLoading = true
+  route.loadingComponent = component
+
+  nextTick(async () => {
+    if (route.loadingComponent.navigate) {
+      try {
+        await route.loadingComponent.navigate.call(route.loadingInstance)
+      } catch (err) {
         // Check the user is still trying to load this same component.
-        if ($router.$$loadingComponent !== component) {
-          return;
+        if (route.loadingComponent !== component) {
+          return
         }
-
-        // Change to the new URL and move the scroll to the start of the page.
-        if (location.pathname !== match.path) {
-          window.scrollTo(0, 0);
-          history.pushState(null, '', formatPath(match));
-        }
-
-        $router.isLoading = false;
-
-        // Load the component in the viewport.
-        $route.component = $router.$$loadingComponent;
-        $router.$$loadingComponent = null;
-
-        // Call any global hook for the router.
-        afterHooks.forEach(hook => hook($route));
-
-        if ($route.component.afterNavigate) {
-          setTimeout(() => $route.component.afterNavigate.call($router.$$loadingInstance));
-        }
-      })
-      .catch(err => {
-        // Check the user is still trying to load this same component.
-        if ($router.$$loadingComponent !== component) {
-          return Promise.reject(err);
-        }
-
-        $router.isLoading = false;
 
         // Even if it fails we have a special component for it; we go ahead
         // and load it and change the URL so the user can reload easily.
         if (location.pathname !== match.path) {
-          window.scrollTo(0, 0);
-          history.pushState(null, '', formatPath(match));
+          window.scrollTo(0, 0)
+          history.pushState(null, '', formatPath(match))
         }
 
         // Load the error page.
-        let error = routes.find(r => r.path === '[error]');
-        $route.component = error ? error.component : undefined;
-        $route.lastException = err;
-        $router.$$loadingComponent = null;
+        route.component = error ? markRaw(error.component) : null
+        route.lastException = err
+        route.isLoading = false
 
-        // Call any global hook for the router.
-        afterHooks.forEach(hook => hook($route));
+        throw err
+      }
+    }
 
-        return Promise.reject(err);
-      });
-  });
+    // Check the user is still trying to load this same component.
+    if (route.loadingComponent !== component) {
+      return
+    }
+
+    // Change to the new URL and move the scroll to the start of the page.
+    if (location.pathname !== match.path) {
+      window.scrollTo(0, 0)
+      history.pushState(null, '', formatPath(match))
+    }
+
+    route.isLoading = false
+    route.component = component
+    route.loadingComponent = null
+  })
 }
 
 
 function formatPath(match) {
-  let u = parseURL(match.path, true, true);
-  delete u.search;
-  u.query = match.search;
-  return formatURL(u);
+  let url = new URL(match.path, 'https://w.w')
+
+  let search = new URLSearchParams()
+  for (let [key, value] of Object.entries(match.search)) {
+    search.set(key, value)
+  }
+  search = search.toString()
+  url.search = search ? `?${search}` : ''
+
+  return url.toString().substring('https://w.w'.length)
 }
 
 
-export function createRouter(Vue, {context, prefix, routes}) {
-  if (!prefix) {
-    prefix = '.';
+function transformLink(hooks, url) {
+  for (let hook of hooks) {
+    url = hook(url)
+  }
+  return url
+}
+
+
+function shouldNavigate(stale, def) {
+  // The component is not a view.
+  if (!stale) {
+    return false
   }
 
-  routes = routes.map(route => {
-    if (!route.component) {
-      return route;
-    }
+  // One of them has a navigate and the other don't. Full reload.
+  if ((stale.navigate && !def.navigate) || (!stale.navigate && def.navigate)) {
+    return true
+  }
 
-    return {
-      ...route,
-      component: context(`${prefix}/${route.component}.js`).default,
-    };
-  });
+  // Navigate function change.
+  if (stale.navigate && def.navigate) {
+    return true
+  }
 
-  $route = Vue.observable({
+  // A different code change, let Vite reload itself.
+  return false
+}
+
+
+export function createRouter({ routes, transformers = [] }) {
+  let route = reactive({
     path: '',
-    component: null,
-    instance: null,
     params: {},
-    search: initSearch({}),
-  });
-  $router = Vue.observable({
+    search: buildSearch({}),
+
+    lastException: null,
+
     isLoading: false,
-  });
-  Vue.prototype.$route = $route;
-  Vue.prototype.$router = $router;
 
-  Vue.$router = $router;
+    loadingComponent: null,
+    loadingInstance: null,
+    component: null,
+  })
 
-  // Prepare all the RegExps for matching routes.
-  routes = initRoutes(routes);
+  routes = initRoutes(routes)
 
-  // Methods to add new hooks to the router.
-  let afterHooks = [];
-  $router.afterRouteChange = hook => {
-    afterHooks.push(hook);
-    return () => {
-      afterHooks.splice(afterHooks.indexOf(hook), 1);
-    };
-  };
+  let router = {
+    // Navigate helper for links and redirections.
+    navigate(url) {
+      url = transformLink(transformers, url)
+      let match = matchRoute(routes, url)
+      loadRoute(routes.find(r => r.path === '[error]'), route, match)
+    },
 
-  let navigateHooks = [];
-  $router.beforeNavigate = hook => {
-    navigateHooks.push(hook);
-    return () => {
-      navigateHooks.splice(navigateHooks.indexOf(hook), 1);
-    };
-  };
+    reload() {
+      this.navigate(location.pathname + location.search)
+    },
 
-  // Navigate helper for links and redirections.
-  $router.navigate = u => {
-    u = $router.transformLink(u);
-    
-    for (let hook of navigateHooks) {
-      u = hook(u);
-    }
-
-    let match = matchRoute(routes, u);
-    loadRoute(Vue, routes, match, afterHooks);
-  };
-
-  // Register a new link transformer that modifies all URLs before assigning them
-  // to any kind of link on the page.
-  let linkTransformers = [];
-  $router.addLinkTransformer = hook => {
-    linkTransformers.push(hook);
-    return () => {
-      linkTransformers.splice(linkTransformers.indexOf(hook), 1);
-    };
-  };
-
-  // Pass a URL through all the hooks.
-  $router.transformLink = u => {
-    for (let hook of linkTransformers) {
-      u = hook(u);
-    }
-    return u;
-  };
+    transformLink(url) {
+      return transformLink(transformers, url)
+    },
+  }
 
   // When the user changes the route we change the component too.
-  window.addEventListener('popstate', () => $router.navigate(location.pathname + location.search));
+  window.addEventListener('popstate', () => router.reload())
 
-  // Start the navigation in the first route we have.
-  Vue.nextTick(() => $router.navigate(location.pathname + location.search));
+  // Start the navigation in the first route we are currently in.
+  nextTick(() => router.reload())
 
-  return $router;
+  // Patch Hot Module Replacement to reload the view when the component changes.
+  if (window.__VUE_HMR_RUNTIME__) {
+    let reload = window.__VUE_HMR_RUNTIME__.reload
+    window.__VUE_HMR_RUNTIME__.reload = function(id, def) {
+      console.clear()
+      
+      let stale
+      if (route.component && route.component.__hmrId === id) {
+        stale = route.component
+      }
+      if (route.loadingComponent && route.loadingComponent.__hmrId === id) {
+        stale = route.loadingComponent
+      }
+      if (shouldNavigate(stale, def)) {
+        route.component = null
+        routes.find(r => r.component.__hmrId === id).component = def
+        router.reload()
+      } else {
+        reload.call(this, id, def)
+      }
+    }
+  }
+
+  return { router, route }
 }
