@@ -1,0 +1,8 @@
+dist
+src/main.js
+src/test
+docs
+Makefile
+.eslintrc.js
+netlify.toml
+index.html
