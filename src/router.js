@@ -117,6 +117,7 @@ async function loadRoute(error, route, match) {
         // Load the error page.
         route.component = error ? markRaw(error.component) : null
         route.lastException = err
+        route.loadingComponent = null
         route.isLoading = false
 
         throw err

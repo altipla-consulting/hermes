@@ -1,26 +1,12 @@
 
-import RouterView from './components/router-view'
-import RouterLink from './components/router-link'
+import { createApp } from 'vue'
 
-import { createRouter } from './router'
-import { install } from './use-api'
+import Hermes from './lib'
+
+import routes from './test/routes'
+import AppLayout from './test/AppLayout.vue'
 
 
-export default {
-  install(app, options) {
-    let { router, route } = createRouter(options)
-
-    install(app, router, route)
-    app.mixin({
-      data() {
-        return {
-          router,
-          route: { ...route },
-        }
-      },
-    })
-
-    app.component('router-view', RouterView)
-    app.component('router-link', RouterLink)
-  },
-}
+let app = createApp(AppLayout)
+app.use(Hermes, { routes })
+app.mount('#app')
