@@ -19,7 +19,6 @@ Things we improve:
 - New lifecycle method `navigate()` that can return a Promise. The router will wait for that promise to be resolved before loading the view.
 - Can enable a route when the `navigate` method fails to load an error screen.
 - Hooks after a view is really loaded, after `navigate` finishes.
-- Hooks to modify the URL before it is finally loaded in the page. They allow to add custom and permanent parameters to all routes, like a global tenant name or something like that.
 - There is a single hook `navigate()` called every time the view is loaded, even if it's the same. No more separate `beforeRouteEnter` and `beforeRouteUpdate` with the same implementation copy pasted in different functions.
 
 
@@ -34,66 +33,73 @@ Things not implemented in this repo:
 
 - No nested router views.
 - No lazy loading of components.
+- No global hooks.
 
 
 ## Usage example
 
-In the [test](test) folder there is a complete working example. The main part of the code is the registration of this plugin:
+In the [src/test](test) folder there is a complete working example. The main part of the code is the registration of this plugin in the [src/main.js](src/main.js) file:
 
 ```js
 import { createApp } from 'vue'
+
 import Hermes from '@altipla/hermes'
 
-import routes from './routes';
+import routes from './test/routes'
+import AppLayout from './test/AppLayout.vue'
 
 
-Vue.use(Hermes, {
-  // Prefix to add to each "component" in the routes.js file.
-  prefix: './views',
-
-  // Webpack context require to load all the files inside the views folder
-  // to then use them as specified in the routes.js file.
-  context: require.context('.', true, /^\.\/views\/.+\.js$/),
-
-  // List of routes imported from routes.js.
-  routes,
-});
+let app = createApp(AppLayout)
+app.use(Hermes, { routes })
+app.mount('#app')
 ````
 
 
-The routes file should export the whole list of URLs registered in the application:
+The routes file should by convention export the whole list of URLs registered in the application:
 
 ```js
+import Home from './views/Home.vue'
+import Simple from './views/Simple.vue'
+import Params from './views/Params.vue'
+import Search from './views/Search.vue'
+import Reload from './views/Reload.vue'
+import ThrowError from './views/ThrowError.vue'
+import Delayed from './views/Delayed.vue'
+import Error from './views/Error.vue'
+import NotFound from './views/NotFound.vue'
+
+
 export default [
-  // This route will load ./views/home.js as the component of the view.
-  {path: '/', component: 'home'},
-  {path: '/simple', component: 'simple'},
-  {path: '/params/:foo', component: 'params'},
-
-  // This will be loaded in case the navigate() of a view fails.
-  {path: '[error]', component: 'error'},
-
-  // Not found catch-all route.
-  {path: '*', component: 'not-found'},
+  { path: '/', component: Home },
+  { path: '/simple', component: Simple },
+  { path: '/params/:foo', component: Params },
+  { path: '/search', component: Search },
+  { path: '/reload', component: Reload },
+  { path: '/throw-error', component: ThrowError },
+  { path: '/delayed', component: Delayed },
+  { path: '[error]', component: Error },
+  { path: '*', component: NotFound },
 ]
 ````
 
 
-Finally the view is the same as in `vue-router`, use a component without name:
+Finally the view is the same as in `vue-router`, use a component:
 
-```js
+```vue
+<template>
+  <div>
+    <h1>Simple View</h1>
+    <h4>Back: <router-link to="/">Home View</router-link></h4>
+  </div>
+</template>
+
+<script>
 export default {
-  template: `
-    <div>
-      <h1>Simple View</h1>
-      <h4>Back: <router-link to="/">Home View</router-link></h4>
-    </div>
-  `,
-
   async navigate() {
     await myService.LoadAnything();
   },
 }
+</script>
 ```
 
 
@@ -102,34 +108,49 @@ export default {
 #### Route params
 
 ```js
-// routes.js
 export default [
-  {path: '/params/:foo', component: 'params'},
+  { path: '/params/:foo', component: Params },
 ]
+```
 
-// params.js
+```vue
+<template>
+  <div>
+    <h1>Params View</h1>
+    <p>{{route.params}}</p>
+    <h4>Back: <router-link to="/">Home View</router-link></h4>
+  </div>
+</template>
+
+<script>
 export default {
-  template: `
-    <div>
-      <h1>Params View</h1>
-      <p>{{myparam}}</p>
-    </div>
-  `,
-
-  computed: {
-    myparam() {
-      return this.$route.params.foo;
-    },
-  },
 }
+</script>
 ```
 
 
 #### Programmatic navigation
 
 ```js
-Vue.$router.navigate('/myroute');
+this.router.navigate('/myroute');
 ````
+
+
+#### Composition API
+
+```js
+import { useRouter, useRoute } from '@altipla/hermes'
+
+
+export default {
+  setup() {
+    let router = useRouter()
+    let route = useRoute()
+
+    ...
+  },
+}
+```
 
 
 #### Search parameters
@@ -137,24 +158,22 @@ Vue.$router.navigate('/myroute');
 If you access `/search?foo=bar` this view will show `bar` inside the paragraph:
 
 ```js
-// routes.js
 export default [
-  {path: '/search', component: 'search'},
+  { path: '/search', component: Search },
 ]
+```
 
-// search.js
+```vue
+<template>
+  <div>
+    <h1>Search View</h1>
+    <p>{{route.search}}</p>
+    <h4>Back: <router-link to="/">Home View</router-link></h4>
+  </div>
+</template>
+
+<script>
 export default {
-  template: `
-    <div>
-      <h1>Search View</h1>
-      <p>{{myparam}}</p>
-    </div>
-  `,
-
-  computed: {
-    myparam() {
-      return this.$route.search.foo;
-    },
-  },
 }
+</script>
 ```

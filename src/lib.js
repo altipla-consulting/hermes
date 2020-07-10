@@ -3,7 +3,7 @@ import RouterView from './components/router-view'
 import RouterLink from './components/router-link'
 
 import { createRouter } from './router'
-import { install } from './use-api'
+import { install, useRouter, useRoute } from './use-api'
 
 
 export default {
@@ -24,3 +24,6 @@ export default {
     app.component('router-link', RouterLink)
   },
 }
+
+
+export { useRoute, useRouter }
