@@ -110,7 +110,6 @@ async function loadRoute(error, route, match) {
         // Even if it fails we have a special component for it; we go ahead
         // and load it and change the URL so the user can reload easily.
         if (location.pathname !== match.path) {
-          window.scrollTo(0, 0)
           history.pushState(null, '', formatPath(match))
         }
 
@@ -131,7 +130,6 @@ async function loadRoute(error, route, match) {
 
     // Change to the new URL and move the scroll to the start of the page.
     if (location.pathname !== match.path) {
-      window.scrollTo(0, 0)
       history.pushState(null, '', formatPath(match))
     }
 
@@ -205,6 +203,8 @@ export function createRouter({ routes, transformers = [] }) {
   let router = {
     // Navigate helper for links and redirections.
     navigate(url) {
+      window.scrollTo(0, 0)
+      
       url = transformLink(transformers, url)
       let match = matchRoute(routes, url)
       loadRoute(routes.find(r => r.path === '[error]'), route, match)
