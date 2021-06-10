@@ -1,0 +1,35 @@
+{
+  "name": "@altipla/hermes",
+  "description": "Advanced Vue router that improves the lifecycle callbacks.",
+  "version": "2.0.0",
+  "main": "./dist/hermes.es.js",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "echo VITE_VERSION=$BUILD_ID > .env.production && NODE_ENV=production vite build && rm .env.production",
+    "lib": "echo VITE_VERSION=$BUILD_ID > .env.lib && NODE_ENV=production vite build --mode lib && rm .env.lib",
+    "lint": "eslint --ext .js,.vue 'src/**'",
+    "fix": "eslint --fix --ext .js,.vue src"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "path-to-regexp": "^6.2.0",
+    "vue": "^3.0.6"
+  },
+  "peerDependencies": {
+    "lodash-es": "^4.17.20",
+    "vue": "^3.0.6"
+  },
+  "devDependencies": {
+    "@altipla/eslint-config-vue": "^0.2.0",
+    "@altipla/vite-config": "^0.2.3",
+    "@vitejs/plugin-vue": "^1.1.4",
+    "@vue/compiler-sfc": "^3.0.6",
+    "eslint": "^7.20.0",
+    "eslint-plugin-vue": "^7.6.0",
+    "vite": "^2.0.1"
+  },
+  "files": [
+    "dist"
+  ]
+}
