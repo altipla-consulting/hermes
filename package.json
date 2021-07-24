@@ -8,7 +8,7 @@
     "start": "vite",
     "build": "echo VITE_VERSION=$BUILD_ID > .env.production && NODE_ENV=production vite build && rm .env.production",
     "lib": "echo VITE_VERSION=$BUILD_ID > .env.lib && NODE_ENV=production vite build --mode lib && rm .env.lib",
-    "lint": "eslint --ext .js,.vue src",
+    "lint": "vue-tsc --noEmit && eslint --ext .js,.vue src",
     "fix": "eslint --fix --ext .js,.vue src"
   },
   "dependencies": {
@@ -20,7 +20,7 @@
     "vue": "^3.0.6"
   },
   "devDependencies": {
-    "lodash-es": "^4.17.20",
+    "vue-tsc": "^0.2.2",
     "@altipla/eslint-config-vue": "^0.2.0",
     "@altipla/vite-config": "^0.2.3",
     "@types/lodash-es": "^4.17.4",
@@ -28,6 +28,7 @@
     "@vue/compiler-sfc": "^3.0.6",
     "eslint": "^7.20.0",
     "eslint-plugin-vue": "^7.6.0",
+    "lodash-es": "^4.17.20",
     "vite": "^2.0.1"
   },
   "files": [
