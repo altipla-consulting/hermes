@@ -6,9 +6,9 @@ import { Key, pathToRegexp } from 'path-to-regexp'
 import makeRedirector from './components/redirector'
 
 
-declare type Transformer = (url: string) => string
+export type Transformer = (url: string) => string
 
-type ComponentNavigate = Component & {
+export type ComponentNavigate = Component & {
   navigate?: (this: ComponentPublicInstance) => Promise<any>
   __hmrId?: string
 }

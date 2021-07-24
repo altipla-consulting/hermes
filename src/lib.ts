@@ -8,6 +8,10 @@ import { createRouter, PluginOptions } from './router'
 import { install, useRouter, useRoute } from './use-api'
 
 
+export type { Router, Route, RouteDeclaration, PluginOptions, ComponentNavigate, Transformer } from './router'
+export { useRoute, useRouter }
+
+
 export default {
   install(app: App, options: PluginOptions) {
     let { router, route } = createRouter(options)
@@ -21,6 +25,3 @@ export default {
     app.component('router-link', RouterLink)
   },
 } as Plugin
-
-
-export { useRoute, useRouter }
