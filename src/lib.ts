@@ -1,8 +1,8 @@
 
 import { readonly, Plugin, App } from 'vue'
 
-import RouterView from '/components/router-view'
-import RouterLink from '/components/router-link'
+import RouterView from './components/router-view'
+import RouterLink from './components/router-link'
 
 import { createRouter, PluginOptions } from './router'
 import { install, useRouter, useRoute } from './use-api'
