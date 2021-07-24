@@ -6,19 +6,6 @@ import { Key, pathToRegexp } from 'path-to-regexp'
 import makeRedirector from './components/redirector'
 
 
-function formatMatch(path: string, search: {[key: string]: any}) {
-  let url = new URL(path, 'https://w.w')
-
-  let p = new URLSearchParams()
-  for (let [key, value] of Object.entries(search)) {
-    p.set(key, value)
-  }
-  let qs = p.toString()
-  url.search = qs ? `?${qs}` : ''
-
-  return url.toString().substring('https://w.w'.length)
-}
-
 declare type Transformer = (url: string) => string
 
 type ComponentNavigate = Component & {
@@ -84,7 +71,7 @@ export class Router {
           // Even if it fails we have a special component for it; we go ahead
           // and load it and change the URL so the user can reload easily.
           if (location.pathname !== path) {
-            history.pushState(null, '', formatMatch(path, search))
+            history.pushState(null, '', this.formatMatch(path, search))
           }
 
           // Load the error page.
@@ -104,7 +91,7 @@ export class Router {
 
       // Change to the new URL if it's different
       let current = `${location.pathname}${location.search}`
-      let expected = formatMatch(path, search)
+      let expected = this.formatMatch(path, search)
       if (current !== expected) {
         history.pushState(null, '', expected)
       }
@@ -148,6 +135,19 @@ export class Router {
     }
 
     throw new Error(`route not found: ${url.pathname}`)
+  }
+
+  private formatMatch(path: string, search: {[key: string]: any}) {
+    let url = new URL(path, 'https://w.w')
+
+    let p = new URLSearchParams()
+    for (let [key, value] of Object.entries(search)) {
+      p.set(key, value)
+    }
+    let qs = p.toString()
+    url.search = qs ? `?${qs}` : ''
+
+    return url.toString().substring('https://w.w'.length)
   }
   
   pushHistory(url: string) {
