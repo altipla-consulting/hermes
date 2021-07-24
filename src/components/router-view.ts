@@ -1,10 +1,10 @@
 
-import { h, ref } from 'vue'
+import { ComponentPublicInstance, defineComponent, h, ref } from 'vue'
 
 import { useRoute } from '../use-api'
 
 
-export default {
+export default defineComponent({
   name: 'router-view',
   setup() {
     let route = useRoute()
@@ -18,7 +18,7 @@ export default {
 
       if (route.loadingComponent) {
         component = h(
-          route.loadingComponent,
+          route.loadingComponent as ComponentPublicInstance,
           {
             ref: viewRef,
             onVnodeMounted() {
@@ -31,4 +31,4 @@ export default {
       return h('main', null, component)
     }
   },
-}
+})

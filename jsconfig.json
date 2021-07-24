@@ -2,8 +2,5 @@
   "compilerOptions": {
     "target": "ES6",
     "baseUrl": "src"
-  },
-  "include": [
-    "src/**/*"
-  ]
+  }
 }
