@@ -10,6 +10,7 @@
   <p><router-link to="/throw-not-found">Throw Not Found View</router-link></p>
   <p><router-link to="/delayed">Delayed View</router-link></p>
   <p><router-link to="/delayed-before-each">Delayed Before Each View</router-link></p>
+  <p><router-link to="/redirect">Redirect View</router-link></p>
 </template>
 
 <script>

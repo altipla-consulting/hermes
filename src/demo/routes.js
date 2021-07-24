@@ -22,6 +22,7 @@ export default [
   { path: '/throw-error', component: ThrowError },
   { path: '/delayed', component: Delayed },
   { path: '/delayed-before-each', component: DelayedBeforeEach },
+  { path: '/redirect', redirect: '/simple' },
   { path: '[error]', component: Error },
   { path: '*', component: NotFound },
 ]

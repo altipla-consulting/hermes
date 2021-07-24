@@ -210,16 +210,16 @@ function shouldNavigateHMR(stale: ComponentNavigate | undefined, def: ComponentN
 
 export function createRouter({ routes, transformers, beforeEach }: PluginOptions) {
   routes.forEach(route => {
-    if (route.redirect) {
-      route.component = makeRedirector(route.redirect, route.keys)
-    }
-
     if (route.path === '*') {
       route.regexp = new RegExp(/.+/)
     } else if (route.path !== '[error]') {
       let keys: Key[] = []
       route.regexp = pathToRegexp(route.path, keys, { sensitive: true })
       route.keys = keys.map(key => key.name as string)
+    }
+
+    if (route.redirect) {
+      route.component = makeRedirector(route.redirect, route.keys)
     }
   })
 
