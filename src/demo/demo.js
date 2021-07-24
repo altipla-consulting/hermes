@@ -1,7 +1,7 @@
 
 import { createApp } from 'vue'
 
-import Hermes from '../lib'
+import Hermes from '../lib.ts'
 
 import routes from './routes'
 import AppLayout from './AppLayout.vue'
