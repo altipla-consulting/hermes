@@ -10,6 +10,8 @@ export type Transformer = (url: string) => string
 
 export type ComponentNavigate = Component & {
   navigate?: (this: ComponentPublicInstance) => Promise<any>
+
+  // Internal. Filled by Vite when using HMR.
   __hmrId?: string
 }
 
