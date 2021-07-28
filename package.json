@@ -3,11 +3,12 @@
   "description": "Advanced Vue router that improves the lifecycle callbacks.",
   "version": "2.1.2",
   "main": "./dist/hermes.es.js",
+  "types": "./dist/lib.d.ts",
   "type": "module",
   "scripts": {
     "start": "vite",
     "build": "echo VITE_VERSION=$BUILD_ID > .env.production && NODE_ENV=production vite build && rm .env.production",
-    "lib": "echo VITE_VERSION=$BUILD_ID > .env.lib && NODE_ENV=production vite build --mode lib && rm .env.lib",
+    "lib": "echo VITE_VERSION=$BUILD_ID > .env.lib && NODE_ENV=production vite build --mode lib && rm .env.lib && npx tsc --emitDeclarationOnly --declaration --esModuleInterop --outDir dist",
     "lint": "vue-tsc --noEmit && eslint --ext .js,.vue src",
     "fix": "eslint --fix --ext .js,.vue src"
   },
