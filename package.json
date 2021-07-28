@@ -8,7 +8,7 @@
   "scripts": {
     "start": "vite",
     "build": "echo VITE_VERSION=$BUILD_ID > .env.production && NODE_ENV=production vite build && rm .env.production",
-    "lib": "echo VITE_VERSION=$BUILD_ID > .env.lib && NODE_ENV=production vite build --mode lib && rm .env.lib && npx tsc --emitDeclarationOnly --declaration --esModuleInterop --outDir dist",
+    "lib": "echo VITE_VERSION=$BUILD_ID > .env.lib && NODE_ENV=production vite build --mode lib && rm .env.lib && tsc --emitDeclarationOnly --declaration --esModuleInterop --outDir dist",
     "lint": "vue-tsc --noEmit && eslint --ext .js,.vue src",
     "fix": "eslint --fix --ext .js,.vue src"
   },
